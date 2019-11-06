@@ -32,7 +32,7 @@ vex::motor tilt = vex::motor(vex::PORT5,vex::gearSetting::ratio36_1,true);
 // lift
 vex::motor lift = vex::motor(vex::PORT4,vex::gearSetting::ratio18_1,false);
 // sensors
-vex::analog_in atonSelectOne = vex::analog_in(Brain.ThreeWirePort.B);
+vex::analog_in atonSelectOne = vex::analog_in(Brain.ThreeWirePort.A);
 vex::analog_in atonSelectTwo = vex::analog_in(Brain.ThreeWirePort.C);
 
 // motivational quote
@@ -77,12 +77,12 @@ void setIntakePower (int pow){
     setIntakeLeftPower(pow);
     setIntakeRightPower(pow);
 }
-// intake --- change controls
+// intake
 void intakeCont(){ 
-    if(Controller1.ButtonL1.pressing()){ // if buttonL1, intake
+    if(Controller1.ButtonR1.pressing()){ // if buttonR1, intake
     setIntakePower(100);
     }   
-    else if(Controller1.ButtonL2.pressing()){ // if buttonL2, detake
+    else if(Controller1.ButtonR2.pressing()){ // if buttonR2, detake
     setIntakePower(-100);
     }   
     else setIntakePower(0);
@@ -98,12 +98,12 @@ void setTiltMotorPower (int power){
 void setTiltPower (int pow){
  setTiltMotorPower(pow);
 }
-// tilter --- change controls
+// tilter --- manual control for emergency only (ex. if macro fails)
 void tilterCont(){ 
-    if(Controller1.ButtonR1.pressing()){ // if buttonR1, tilt up
+    if(Controller1.ButtonR1.pressing()){ // if buttonUp, tilt up
      setTiltPower(100);
     }   
-    else if(Controller1.ButtonR2.pressing()){ // if buttonR2, tilt down
+    else if(Controller1.ButtonR2.pressing()){ // if buttonDown, tilt down
       setTiltPower(-100);
     }   
     else setTiltPower(0);
@@ -119,16 +119,26 @@ void setLiftMotorPower (int power){
 void setLiftPower (int pow){
  setLiftMotorPower(pow);
 }
-// lift --- change controls
+// lift
 void liftCont(){ 
-    if(Controller1.ButtonUp.pressing()){ // if buttonUp, lift up
+    if(Controller1.ButtonR1.pressing()){ // if buttonR1, lift up
      setLiftPower(100);
     }   
-    else if(Controller1.ButtonDown.pressing()){ // if buttonDown, lift down
+    else if(Controller1.ButtonR2.pressing()){ // if buttonR2, lift down
       setLiftPower(-100);
     }   
     else setLiftPower(0);
 }
+
+// macy control wishes
+/*
+L1 - scoring macro                       - in progress (written at end of aton functions)
+L2 - toggle                              - not started
+R1 - intake          (use L2 for toggle) - done
+R2 - detake          (use L2 for toggle) - done (still need control toggle so lift
+R1 - lift up         (use L2 for toggle) - done  and intake don't run at same time)
+R1 - lift down       (use L2 for toggle) - done
+*/
 
 
 /*---------------------------------------------------------------------------*/
@@ -358,13 +368,13 @@ void autoIntake(bool On, bool In){
 }
 
 // tilter
-void tiltUp(int pos, int power=100){ // set default power to 100
+void tiltUp(int pos, int power=50){ // set default power to 50
         tilt.resetRotation();
 
         tilt.startRotateFor(pos,vex::rotationUnits::deg,power,vex::velocityUnits::pct);
         tilt.setStopping(vex::brakeType::coast);
 }
-void tiltBack(int rotations, int power = 100){ // set default power to 100
+void tiltBack(int rotations, int power = 50){ // set default power to 50
   int direction = sgn(rotations);
 
     while(abs(tilt.rotation(vex::rotationUnits::deg))<abs(rotations)){
@@ -388,6 +398,16 @@ void AtonLift(int rotations, int power = 100){ // set default power to 100
     }
     setLiftPower(0);
   }
+
+// scoring macro -- just the skeleton, still need to adjust values just like an aton routine
+void scoring(){ 
+  if(Controller1.ButtonL1.pressing()){
+    tiltUp(45);
+    vex::task::sleep(500);
+    driveRamp(-1000);
+    tiltBack(-45);
+  }
+}
 
 /*---------------------------------------------------------------------------*/
 /*                                                                           */

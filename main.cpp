@@ -67,14 +67,15 @@ void usercontrol( void ) {
 
     Brain.Screen.clearScreen();
 
-    DriveRampingEnabled=false; //turn off ramping for driver control
+    DriveRampingEnabled=false; // turn off ramping for driver control
 
     driveCont();
     intakeCont();
     tilterCont();
     liftCont();
+    scoring();
 
-    vex::task::sleep(20); //Sleep the task for a short amount of time to prevent wasted resources. 
+    vex::task::sleep(20); // sleep the task for a short amount of time to prevent wasted resources. 
   }
 }
 
